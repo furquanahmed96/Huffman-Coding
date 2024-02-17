@@ -1,0 +1,65 @@
+#include <iostream>
+#include <vector>
+#include <algorithm> 
+
+using namespace std;
+
+// Tree node
+struct Node {
+    char data;
+    unsigned freq;
+    Node* left;
+    Node* right;
+
+    Node(char data, unsigned freq) : data(data), freq(freq), left(nullptr), right(nullptr) {}
+};
+
+bool compare(Node* l, Node* r) {
+    return l->freq < r->freq;
+}
+
+void printCodes(Node* root, string str) {
+    if (!root) return;
+
+    if (root->data != '$') {
+        cout << root->data << ": " << str << endl;
+    }
+
+    printCodes(root->left, str + "0");
+    printCodes(root->right, str + "1");
+}
+
+void buildHuffmanTree(const vector<char>& data, const vector<int>& freq, size_t size) {
+    vector<Node*> nodes;
+
+    for (size_t i = 0; i < size; ++i) {
+        nodes.push_back(new Node(data[i], freq[i]));
+    }
+
+    while (nodes.size() > 1) {
+
+        sort(nodes.begin(), nodes.end(), compare);
+
+        Node* left = nodes[0];
+        Node* right = nodes[1];
+        nodes.erase(nodes.begin()); 
+        nodes.erase(nodes.begin()); 
+
+        Node* top = new Node('$', left->freq + right->freq);
+        top->left = left;
+        top->right = right;
+
+        nodes.push_back(top);
+    }
+
+    printCodes(nodes.front(), "");
+}
+
+int main() {
+    vector<char> data = {'a', 'b', 'c', 'd', 'e', 'f'};
+    vector<int> freq = {5, 9, 12, 13, 16, 45};
+
+    buildHuffmanTree(data, freq, data.size());
+
+    return 0;
+}
